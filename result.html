@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>API 結果</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        height: 100vh;
+        margin: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: #8E8E8E;
+      }
+
+      .form-container {
+        background: white;
+        padding: 20px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        border-radius: 8px;
+        text-align: center;
+      }
+      .result-container { margin: 20px; padding: 15px; border: 1px solid #ccc; }
+    .result-item { margin-bottom: 10px; }
+    .label { font-weight: bold; margin-right: 5px; }
+  </style>
+</head>
+<body>
+    <div class="form-container">
+
+  <h1>API 處理結果</h1>
+  <div id="result">
+    </div>
+
+      <footer>
+        <hr />
+        <p> ©️2024 edc-pws.com. All rights reserved.</p>
+      </footer>
+
+  <script>
+    // JavaScript 程式碼來解析 URL 參數並顯示結果
+    function getUrlParameter(name) {
+      name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+      var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+      var results = regex.exec(location.search);
+      return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+    }
+
+    var resultContainer = document.getElementById('result');
+    var param1 = getUrlParameter('param1');
+    var param2 = getUrlParameter('param2');
+    var message = getUrlParameter('message');
+
+    if (param1) {
+      var item1 = document.createElement('div');
+      item1.className = 'result-item';
+      item1.innerHTML = '<span class="label">參數一:</span> ' + param1;
+      resultContainer.appendChild(item1);
+    }
+
+    if (param2) {
+      var item2 = document.createElement('div');
+      item2.className = 'result-item';
+      item2.innerHTML = '<span class="label">參數二:</span> ' + param2;
+      resultContainer.appendChild(item2);
+    }
+
+    if (message) {
+      var messageDiv = document.createElement('div');
+      messageDiv.className = 'result-item';
+      messageDiv.innerHTML = '<span class="label">訊息:</span> ' + message;
+      resultContainer.appendChild(messageDiv);
+    }
+
+    // 您可以根據您的 API 回傳的參數數量和類型，在這裡添加更多顯示邏輯
+  </script>
+</body>
+</html>
