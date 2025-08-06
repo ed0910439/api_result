@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>處理中...</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #f0f2f5;
+            color: #333;
+            text-align: center;
+            flex-direction: column;
+        }
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-left-color: #007bff;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        p {
+            font-size: 1.1em;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+    <div class="spinner"></div>
+    <p>正在處理您的請求，請稍候...</p>
+
+    <script>
+        // 設定您的 Google Apps Script 網路應用程式的 URL
+        const GOOGLE_SCRIPT_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbyzEN_SENiaPoBddueWsFJkBVlwy792sM2--4trOVS5uYxYVcxExvBAjFI1ePtJKt_xCg/exec'; // <-- 請替換為您的實際 URL
+
+        /**
+         * 獲取 URL 參數的值。
+         * @param {string} name 參數名稱。
+         * @returns {string|null} 參數值，如果不存在則為 null。
+         */
+        function getUrlParameter(name) {
+            name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+            const regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+            const results = regex.exec(location.search);
+            return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+        }
+
+        /**
+         * 獲取用戶 IP 並重定向到 Google Apps Script。
+         */
+        async function processRequest() {
+            const action = getUrlParameter('action'); // 從當前網頁 URL 獲取 action 參數
+            let userIp = '';
+
+            try {
+                // 呼叫公共 IP 查詢服務
+                const response = await fetch('https://api.ipify.org?format=json');
+                const data = await response.json();
+                userIp = data.ip;
+                console.log('獲取到的用戶 IP:', userIp);
+            } catch (error) {
+                console.error('獲取 IP 失敗:', error);
+                // 如果獲取 IP 失敗，可以選擇不傳遞 IP 或傳遞一個錯誤訊息
+                userIp = 'unknown'; // 或者直接留空
+            }
+
+            // 構建重定向到 Google Apps Script 的 URL
+            let redirectUrl = `${GOOGLE_SCRIPT_WEB_APP_URL}?action=${encodeURIComponent(action)}`;
+            if (userIp) {
+                redirectUrl += `&userIp=${encodeURIComponent(userIp)}`;
+            }
+
+            console.log('重定向到:', redirectUrl);
+            window.location.href = redirectUrl; // 執行重定向
+        }
+
+        // 頁面載入完成後立即執行
+        document.addEventListener('DOMContentLoaded', processRequest);
+    </script>
+</body>
+</html><!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>處理中...</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #f0f2f5;
+            color: #333;
+            text-align: center;
+            flex-direction: column;
+        }
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-left-color: #007bff;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        p {
+            font-size: 1.1em;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+    <div class="spinner"></div>
+    <p>正在處理您的請求，請稍候...</p>
+
+    <script>
+        // 設定您的 Google Apps Script 網路應用程式的 URL
+        const GOOGLE_SCRIPT_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbyzEN_SENiaPoBddueWsFJkBVlwy792sM2--4trOVS5uYxYVcxExvBAjFI1ePtJKt_xCg/exec'; // <-- 請替換為您的實際 URL
+
+        /**
+         * 獲取 URL 參數的值。
+         * @param {string} name 參數名稱。
+         * @returns {string|null} 參數值，如果不存在則為 null。
+         */
+        function getUrlParameter(name) {
+            name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+            const regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+            const results = regex.exec(location.search);
+            return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+        }
+
+        /**
+         * 獲取用戶 IP 並重定向到 Google Apps Script。
+         */
+        async function processRequest() {
+            const action = getUrlParameter('action'); // 從當前網頁 URL 獲取 action 參數
+            let userIp = '';
+
+            try {
+                // 呼叫公共 IP 查詢服務
+                const response = await fetch('https://api.ipify.org?format=json');
+                const data = await response.json();
+                userIp = data.ip;
+                console.log('獲取到的用戶 IP:', userIp);
+            } catch (error) {
+                console.error('獲取 IP 失敗:', error);
+                // 如果獲取 IP 失敗，可以選擇不傳遞 IP 或傳遞一個錯誤訊息
+                userIp = 'unknown'; // 或者直接留空
+            }
+
+            // 構建重定向到 Google Apps Script 的 URL
+            let redirectUrl = `${GOOGLE_SCRIPT_WEB_APP_URL}?action=${encodeURIComponent(action)}`;
+            if (userIp) {
+                redirectUrl += `&userIp=${encodeURIComponent(userIp)}`;
+            }
+
+            console.log('重定向到:', redirectUrl);
+            window.location.href = redirectUrl; // 執行重定向
+        }
+
+        // 頁面載入完成後立即執行
+        document.addEventListener('DOMContentLoaded', processRequest);
+    </script>
+</body>
+</html>
