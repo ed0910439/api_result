@@ -1,78 +1,168 @@
-<!DOCTYPE html>
-<html>
+﻿<!DOCTYPE html>
+<html lang="zh-TW">
 <head>
-  <title>API 結果</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API 結果</title>
     <style>
-      body {
-        font-family: Arial, sans-serif;
-        height: 100vh;
-        margin: 0;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        background-color: #8E8E8E;
-      }
+        body {
+            font-family: Arial, sans-serif;
+            height: 100vh;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: rgb(49, 49, 49);
+        }
 
-      .form-container {
-        background: white;
-        padding: 20px;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        border-radius: 8px;
-        text-align: center;
-      }
-      .result-container { margin: 20px; padding: 15px; border: 1px solid #ccc; }
-    .result-item { margin-bottom: 10px; }
-    .label { font-weight: bold; margin-right: 5px; }
-  </style>
+        .form-container {
+            background-image: url('./service_bg.png'); /* 將 YOUR_IMAGE_URL_HERE 替換為您的圖片網址 */
+            background-repeat: no-repeat; /* 防止圖片重複平鋪 */
+            background-size: cover; /* 縮放圖片以完整覆蓋容器 */
+            background-position: center; /* 將圖片置於容器中央 */
+            padding: 25px;
+            /* box-shadow: 0 0 30px #f7dab0; <-- 陰影已移到 .inner-container */
+            border-radius: 8px;
+            text-align: center;
+            width: 351px;
+            height: 320px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            /* 移除這裡的 box-shadow */
+        }
+
+        /* 新增的內部容器，用於承載內容和陰影 */
+        .inner-container {
+            background-color: transparent; /* 內部容器背景透明，讓圖片顯示 */
+            padding: 0; /* 內部容器不需要額外內邊距 */
+            //box-shadow: 0 0 30px #f7dab0; /* 將陰影應用到這個容器 */
+            border-radius: 8px; /* 保持圓角 */
+            height: 100%; /* 讓內部容器填滿 form-container 的高度 */
+            width: 100%; /* 讓內部容器填滿 form-container 的寬度 */
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        h1 {
+            color: #333;
+            margin-top: 20px;
+            margin-bottom: 15px;
+        }
+
+        .content-wrapper {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 10px 0;
+        }
+
+        .result-item {
+            margin-bottom: 10px;
+            font-size: 1.1em;
+            color: #333;
+        }
+
+        .label {
+            font-weight: bold;
+            margin-right: 5px;
+            color: #555;
+        }
+
+        footer {
+            margin-top: 20px;
+            font-size: 0.8em;
+            color: #666;
+        }
+        footer hr {
+            border: none;
+            border-top: 1px solid #ccc;
+            margin: 10px 0;
+        }
+        .footer-info {
+            margin-bottom: 10px;
+        }
+    </style>
 </head>
 <body>
     <div class="form-container">
+        <div class="inner-container"> <!-- 新增的內部容器 -->
+            <h1>API 處理結果</h1>
+            <div class="content-wrapper" id="result">
+                <!-- 訊息或錯誤結果將會在這裡顯示 -->
+            </div>
 
-  <h1>API 處理結果</h1>
-  <div id="result">
+            <footer>
+                <div class="footer-info" id="footer-details">
+                    <!-- 時間和 IP 將會在這裡顯示 -->
+                </div>
+                <hr />
+                <p>©2024-2025 edc-pws.com. All rights reserved.</p>
+            </footer>
+        </div> <!-- inner-container 結束 -->
     </div>
 
-      <footer>
-        <hr />
-        <p> ©️2024 edc-pws.com. All rights reserved.</p>
-      </footer>
+    <script>
+        // JavaScript 程式碼來解析 URL 參數並顯示結果
+        function getUrlParameter(name) {
+            name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+            var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+            var results = regex.exec(location.search);
+            return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+        }
 
-  <script>
-    // JavaScript 程式碼來解析 URL 參數並顯示結果
-    function getUrlParameter(name) {
-      name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
-      var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
-      var results = regex.exec(location.search);
-      return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
-    }
+        var resultContainer = document.getElementById('result');
+        var footerDetailsContainer = document.getElementById('footer-details');
 
-    var resultContainer = document.getElementById('result');
-    var param1 = getUrlParameter('param1');
-    var param2 = getUrlParameter('param2');
-    var message = getUrlParameter('message');
+        // 獲取 URL 參數
+        var message = getUrlParameter('message');
+        var error = getUrlParameter('error');
+        var userIp = getUrlParameter('userIp');
 
-    if (param1) {
-      var item1 = document.createElement('div');
-      item1.className = 'result-item';
-      item1.innerHTML = '<span class="label">參數一:</span> ' + param1;
-      resultContainer.appendChild(item1);
-    }
+        // 顯示訊息或錯誤
+        if (message) {
+            var messageDiv = document.createElement('div');
+            messageDiv.className = 'result-item';
+            messageDiv.innerHTML = '<span class="label">訊息:</span> ' + message;
+            resultContainer.appendChild(messageDiv);
+        } else if (error) {
+            var errorDiv = document.createElement('div');
+            errorDiv.className = 'result-item';
+            errorDiv.innerHTML = '<span class="label" style="color: red;">錯誤:</span> ' + error;
+            resultContainer.appendChild(errorDiv);
+        } else {
+            var defaultDiv = document.createElement('div');
+            defaultDiv.className = 'result-item';
+            defaultDiv.innerHTML = '沒有可顯示的結果訊息。';
+            resultContainer.appendChild(defaultDiv);
+        }
 
-    if (param2) {
-      var item2 = document.createElement('div');
-      item2.className = 'result-item';
-      item2.innerHTML = '<span class="label">參數二:</span> ' + param2;
-      resultContainer.appendChild(item2);
-    }
+        // 顯示當前時間
+        var now = new Date();
+        var timeString = now.toLocaleString('zh-TW', {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: false
+        });
+        var timeDiv = document.createElement('div');
+        timeDiv.className = 'result-item';
+        timeDiv.innerHTML = '<span class="label">操作時間:</span> ' + timeString;
+        footerDetailsContainer.appendChild(timeDiv);
 
-    if (message) {
-      var messageDiv = document.createElement('div');
-      messageDiv.className = 'result-item';
-      messageDiv.innerHTML = '<span class="label">訊息:</span> ' + message;
-      resultContainer.appendChild(messageDiv);
-    }
-
-    // 您可以根據您的 API 回傳的參數數量和類型，在這裡添加更多顯示邏輯
-  </script>
+        // 顯示用戶 IP
+        if (userIp) {
+            var ipDiv = document.createElement('div');
+            ipDiv.className = 'result-item';
+            ipDiv.innerHTML = '<span class="label">您的 IP:</span> ' + userIp;
+            footerDetailsContainer.appendChild(ipDiv);
+        }
+    </script>
 </body>
 </html>
