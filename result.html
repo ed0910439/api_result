@@ -90,7 +90,7 @@
 <body>
     <div class="form-container">
         <div class="inner-container"> <!-- 新增的內部容器 -->
-            <h1>API 處理結果</h1>
+            <h1>作廢發票預約通知</h1>
             <div class="content-wrapper" id="result">
                 <!-- 訊息或錯誤結果將會在這裡顯示 -->
             </div>
@@ -126,12 +126,12 @@
         if (message) {
             var messageDiv = document.createElement('div');
             messageDiv.className = 'result-item';
-            messageDiv.innerHTML = '<span class="label">訊息:</span> ' + message;
+            messageDiv.innerHTML = '<span class="label">訊息</span></br> ' + message;
             resultContainer.appendChild(messageDiv);
         } else if (error) {
             var errorDiv = document.createElement('div');
             errorDiv.className = 'result-item';
-            errorDiv.innerHTML = '<span class="label" style="color: red;">錯誤:</span> ' + error;
+            errorDiv.innerHTML = '<span class="label" style="color: red;">錯誤</br></span> ' + error;
             resultContainer.appendChild(errorDiv);
         } else {
             var defaultDiv = document.createElement('div');
@@ -156,13 +156,13 @@
         timeDiv.innerHTML = '<span class="label">操作時間:</span> ' + timeString;
         footerDetailsContainer.appendChild(timeDiv);
 
-        // 顯示用戶 IP
+        /* 顯示用戶 IP
         if (userIp) {
             var ipDiv = document.createElement('div');
             ipDiv.className = 'result-item';
             ipDiv.innerHTML = '<span class="label">您的 IP:</span> ' + userIp;
             footerDetailsContainer.appendChild(ipDiv);
-        }
+        }*/
     </script>
 </body>
 </html>
