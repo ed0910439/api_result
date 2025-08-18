@@ -16,48 +16,46 @@
         }
 
         .form-container {
-            background-image: url('./service_bg.png'); /* 將 YOUR_IMAGE_URL_HERE 替換為您的圖片網址 */
-            background-repeat: no-repeat; /* 防止圖片重複平鋪 */
-            background-size: cover; /* 縮放圖片以完整覆蓋容器 */
-            background-position: center; /* 將圖片置於容器中央 */
-            padding: 25px;
-            /* box-shadow: 0 0 30px #f7dab0; <-- 陰影已移到 .inner-container */
+            background-image: url('./service_bg.png'); /* 替換為您的圖片網址 */
+            background-repeat: no-repeat;
+            background-size: cover;
+            background-position: center;
+            background-color:#f7dab0;
+            box-shadow: 0 0 30px #f7dab0; /* 陰影應用於此外部容器 */
             border-radius: 8px;
             text-align: center;
             width: 351px;
             height: 320px;
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
-            /* 移除這裡的 box-shadow */
         }
 
-        /* 新增的內部容器，用於承載內容和陰影 */
-        .inner-container {
-            background-color: transparent; /* 內部容器背景透明，讓圖片顯示 */
-            padding: 0; /* 內部容器不需要額外內邊距 */
-            //box-shadow: 0 0 30px #f7dab0; /* 將陰影應用到這個容器 */
-            border-radius: 8px; /* 保持圓角 */
-            height: 100%; /* 讓內部容器填滿 form-container 的高度 */
-            width: 100%; /* 讓內部容器填滿 form-container 的寬度 */
+        /* 這個內部容器用於提供內容的內邊距，並管理內容佈局 */
+        .content-area-wrapper {
+            flex-grow: 1;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
+            padding: 25px; /* 在這裡應用內邊距，創造內容與圖片邊緣的空間 */
+            box-sizing: border-box; /* 確保 padding 包含在 width/height 計算中 */
+            border-radius: 8px; /* 匹配外部容器的圓角 */
+            /* 背景保持透明，以顯示 form-container 的背景圖片 */
         }
 
         h1 {
             color: #333;
-            margin-top: 20px;
+            margin-top: 0; /* 重置 h1 的上邊距，因為 padding 已在父元素上 */
             margin-bottom: 15px;
         }
 
-        .content-wrapper {
+        /* 這個 div 專門用於顯示訊息/錯誤/預設內容 */
+        .main-message-display {
             flex-grow: 1;
             display: flex;
             flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            padding: 10px 0;
+            justify-content: center; /* 垂直居中內容 */
+            align-items: center; /* 水平居中內容 */
+            padding: 10px 0; /* 訊息內容的內部間距 */
         }
 
         .result-item {
@@ -73,36 +71,32 @@
         }
 
         footer {
-            margin-top: 20px;
+            margin-top: auto; /* 將頁腳推到 content-area-wrapper 的底部 */
             font-size: 0.8em;
             color: #666;
+            width: 100%; /* 確保頁腳佔據其父元素的全部寬度 */
         }
         footer hr {
             border: none;
             border-top: 1px solid #ccc;
             margin: 10px 0;
         }
-        .footer-info {
-            margin-bottom: 10px;
-        }
+        /* .footer-info 類別已不再需要，因為時間和 IP 元素已被移除 */
     </style>
 </head>
 <body>
     <div class="form-container">
-        <div class="inner-container"> <!-- 新增的內部容器 -->
-            <h1>作廢發票預約通知</h1>
-            <div class="content-wrapper" id="result">
-                <!-- 訊息或錯誤結果將會在這裡顯示 -->
+        <div class="content-area-wrapper">
+            <h1>API 處理結果</h1>
+            <div class="main-message-display" id="result">
+                <!-- 結果訊息將會在這裡顯示 -->
             </div>
 
             <footer>
-                <div class="footer-info" id="footer-details">
-                    <!-- 時間和 IP 將會在這裡顯示 -->
-                </div>
                 <hr />
                 <p>©2024-2025 edc-pws.com. All rights reserved.</p>
             </footer>
-        </div> <!-- inner-container 結束 -->
+        </div>
     </div>
 
     <script>
@@ -114,55 +108,57 @@
             return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
         }
 
+        // 定義回應代碼到訊息的映射 (與 Apps Script 中的 MESSAGES 保持一致)
+        const RESPONSE_MESSAGES = {
+            // 成功類 (1xx)
+            100: { type: 'success', label: '訊息:', message: '預約成功。' },
+            101: { type: 'success', label: '訊息:', message: '今日通知觸發器已設定，請勿重複預約。' },
+            102: { type: 'success', label: '訊息:', message: '通知已立即發送。' },
+            103: { type: 'success', label: '訊息:', message: '今日通知已發送。' },
+            104: { type: 'success', label: '訊息:', message: '已成功取消預約。' },
+
+            // 錯誤類 (2xx - 用戶操作/時間相關)
+            200: { type: 'error', label: '錯誤:', message: '非系統服務時間 (服務時間為 1:00 至 3:00)。' },
+            201: { type: 'error', label: '錯誤:', message: '連結已過期，請點擊 Line 官方帳號最新訊息中的連結。' },
+            202: { type: 'error', label: '錯誤:', message: '無效的操作。' },
+            203: { type: 'error', label: '錯誤:', message: '取消失敗：已過通知發送時間，無法取消。' },
+            204: { type: 'error', label: '錯誤:', message: '取消失敗：目前沒有設定任何預約通知。' },
+            205: { type: 'error', label: '錯誤:', message: '驗證失敗，請重新嘗試。' }, // 新增：驗證碼錯誤或過期
+
+            // 系統錯誤類 (5xx)
+            500: { type: 'error', label: '錯誤:', message: '第三方平台問題，請稍後再試。' },
+            501: { type: 'error', label: '錯誤:', message: '發生系統錯誤，請稍後再試。' }
+        };
+
         var resultContainer = document.getElementById('result');
-        var footerDetailsContainer = document.getElementById('footer-details');
 
-        // 獲取 URL 參數
-        var message = getUrlParameter('message');
-        var error = getUrlParameter('error');
-        var userIp = getUrlParameter('userIp');
+        // 獲取 URL 參數中的 code
+        var responseCode = getUrlParameter('code');
+        var displayMessage = '沒有可顯示的結果訊息。'; // 預設訊息
+        var messageType = 'default'; // 'success', 'error', 'default'
 
-        // 顯示訊息或錯誤
-        if (message) {
-            var messageDiv = document.createElement('div');
-            messageDiv.className = 'result-item';
-            messageDiv.innerHTML = '<span class="label">訊息</span></br> ' + message;
-            resultContainer.appendChild(messageDiv);
-        } else if (error) {
-            var errorDiv = document.createElement('div');
-            errorDiv.className = 'result-item';
-            errorDiv.innerHTML = '<span class="label" style="color: red;">錯誤</br></span> ' + error;
-            resultContainer.appendChild(errorDiv);
-        } else {
-            var defaultDiv = document.createElement('div');
-            defaultDiv.className = 'result-item';
-            defaultDiv.innerHTML = '沒有可顯示的結果訊息。';
-            resultContainer.appendChild(defaultDiv);
+        if (responseCode) {
+            const codeInfo = RESPONSE_MESSAGES[responseCode];
+            if (codeInfo) {
+                displayMessage = codeInfo.message;
+                messageType = codeInfo.type;
+            } else {
+                displayMessage = '未知回應代碼: ' + responseCode;
+                messageType = 'error'; // 未知代碼也視為錯誤
+            }
         }
 
-        // 顯示當前時間
-        var now = new Date();
-        var timeString = now.toLocaleString('zh-TW', {
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit',
-            hour: '2-digit',
-            minute: '2-digit',
-            second: '2-digit',
-            hour12: false
-        });
-        var timeDiv = document.createElement('div');
-        timeDiv.className = 'result-item';
-        timeDiv.innerHTML = '<span class="label">操作時間:</span> ' + timeString;
-        footerDetailsContainer.appendChild(timeDiv);
+        var messageDiv = document.createElement('div');
+        messageDiv.className = 'result-item';
 
-        /* 顯示用戶 IP
-        if (userIp) {
-            var ipDiv = document.createElement('div');
-            ipDiv.className = 'result-item';
-            ipDiv.innerHTML = '<span class="label">您的 IP:</span> ' + userIp;
-            footerDetailsContainer.appendChild(ipDiv);
-        }*/
+        if (messageType === 'success') {
+            messageDiv.innerHTML = '<span class="label">訊息:</span> ' + displayMessage;
+        } else if (messageType === 'error') {
+            messageDiv.innerHTML = '<span class="label" style="color: red;">錯誤:</span> ' + displayMessage;
+        } else {
+            messageDiv.innerHTML = displayMessage; // 顯示預設訊息
+        }
+        resultContainer.appendChild(messageDiv);
     </script>
 </body>
 </html>
